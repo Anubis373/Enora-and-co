@@ -1,11 +1,396 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Page de con :D</title>
-        <link rel="stylesheet" href="mystyle.css">
-        <script src="script.js"></script>
-    </head>
-    <body>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIRD - Le Clicker de la Résistance</title>
+    <style>
+        :root {
+            --primary: #e67e22; /* Orange Artisanat */
+            --secondary: #2c3e50; /* Bleu Nuit */
+            --accent: #27ae60; /* Vert Durable */
+            --light: #f5f6fa;
+            --dark: #1a252f;
+            --danger: #c0392b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--dark);
+            background-color: var(--light);
+        }
+
+        /* --- Header --- */
+        header {
+            background: var(--secondary);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        header h1 { margin: 0; font-size: 2.5rem; }
+        header p { color: var(--primary); font-weight: bold; margin-top: 0.5rem; }
+
+        /* --- Layout Clicker --- */
+        .game-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr; /* Colonne gauche info, droite shop */
+            gap: 2rem;
+            padding: 0 1rem;
+        }
+
+        /* --- Zone Gauche : Le PC à libérer --- */
+        .click-zone {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+        }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--accent);
+            display: block;
+        }
+
+        .score-label {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            margin-bottom: 2rem;
+        }
+
+        #main-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 10px 0 #d35400;
+            transition: all 0.1s;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #main-btn:active {
+            transform: translateY(10px);
+            box-shadow: 0 0 0 #d35400;
+        }
+
+        #main-btn::after {
+            content: "🐧"; /* Logo Linux implicite */
+            font-size: 4rem;
+            display: block;
+        }
+
+        .stats-box {
+            background: var(--light);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            border: 1px solid #ddd;
+        }
+
+        /* --- Zone Droite : Le Magasin (Ressources NIRD) --- */
+        .shop-zone {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .shop-header {
+            background: var(--dark);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .upgrade-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+            border-left: 5px solid var(--secondary);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .upgrade-item:hover {
+            transform: scale(1.02);
+        }
+
+        .upgrade-item.locked {
+            opacity: 0.6;
+            background-color: #eee;
+            cursor: not-allowed;
+        }
+
+        .upgrade-info h4 { margin: 0 0 0.2rem 0; font-size: 1.2rem; }
+        .upgrade-info p { margin: 0; color: #7f8c8d; font-size: 0.9rem; }
+        .upgrade-cost {
+            font-weight: bold;
+            color: var(--danger);
+            background: #ffeaa7;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+        }
         
-    </body>
+        .level-badge {
+            background: var(--secondary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+
+        /* --- Explications / Footer --- */
+        .context-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .game-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>💻 NIRD Clicker</h1>
+        <p>Le Village Numérique Résistant contre l'Empire Big Tech</p>
+    </header>
+
+    <div class="game-container">
+        
+        <div class="click-zone">
+            <div>
+                <span id="score" class="score-display">0</span>
+                <span class="score-label">Ordinateurs sauvés de la déchetterie</span>
+            </div>
+            
+            <br>
+            
+            <button id="main-btn" onclick="clickAction()">LIBÉRER<br>UN PC</button>
+
+            <div class="stats-box">
+                <p><strong>Production automatique :</strong> <span id="per-second">0</span> PC / sec</p>
+                <p><strong>Impact écologique évité :</strong> <span id="co2-saved">0</span> kg de CO2</p>
+            </div>
+            
+            <div style="margin-top: 1rem; font-style: italic; color: var(--primary);">
+                "Ne jetez pas, migrez !"
+            </div>
+        </div>
+
+        <div class="shop-zone">
+            <div class="shop-header">
+                <h3>🛠️ Organiser la Résistance (Améliorations)</h3>
+                <small>Investissez vos PC sauvés pour recruter</small>
+            </div>
+
+            <div id="upgrades-list">
+                </div>
+        </div>
+    </div>
+
+    <div class="context-section">
+        <h3>Pourquoi ce jeu ?</h3>
+        <p>
+            Dans la réalité, la démarche <strong>NIRD</strong> permet aux établissements scolaires de reprendre le contrôle. 
+            Chaque clic représente un ordinateur reconditionné ou passé sous Linux pour éviter l'obsolescence programmée de Windows 10.
+            <br><br>
+            <em>Source : Sujet Nuit de l'Info 2025 - Le Village Numérique Résistant.</em>
+        </p>
+    </div>
+
+    <script>
+        // --- LOGIQUE DU JEU ---
+
+        let state = {
+            score: 0,
+            perSecond: 0,
+            totalClicks: 0
+        };
+
+        // Définition des améliorations basées sur le PDF
+        const upgrades = [
+            {
+                id: 'usb',
+                name: "Clé USB Bootable",
+                desc: "Permet d'installer Linux plus vite.",
+                baseCost: 15,
+                production: 0.5, // 1 PC tous les 2 secondes
+                count: 0,
+                icon: "💾"
+            },
+            {
+                id: 'club',
+                name: "Club Informatique",
+                desc: "Des élèves passionnés aident à la maintenance.", // 
+                baseCost: 100,
+                production: 3,
+                count: 0,
+                icon: "students" // ou emoji 🙋
+            },
+            {
+                id: 'teacher',
+                name: "Formation Profs",
+                desc: "Les enseignants adoptent le Libre.", // 
+                baseCost: 500,
+                production: 10,
+                count: 0,
+                icon: "👨‍🏫"
+            },
+            {
+                id: 'tech',
+                name: "Admin Réseau Allié",
+                desc: "L'admin réseau déploie des images NIRD.", // 
+                baseCost: 2000,
+                production: 50,
+                count: 0,
+                icon: "⚙️"
+            },
+            {
+                id: 'forge',
+                name: "Forge des Communs",
+                desc: "Mutualisation nationale des ressources.", // [cite: 46]
+                baseCost: 10000,
+                production: 200,
+                count: 0,
+                icon: "🔥"
+            }
+        ];
+
+        // Éléments du DOM
+        const scoreEl = document.getElementById('score');
+        const perSecEl = document.getElementById('per-second');
+        const co2El = document.getElementById('co2-saved');
+        const upgradesContainer = document.getElementById('upgrades-list');
+        const btn = document.getElementById('main-btn');
+
+        // Fonction du clic principal
+        function clickAction() {
+            addScore(1);
+            // Petit effet visuel
+            btn.style.transform = "scale(0.95)";
+            setTimeout(() => btn.style.transform = "scale(1)", 50);
+        }
+
+        // Ajouter du score
+        function addScore(amount) {
+            state.score += amount;
+            state.totalClicks += amount;
+            updateUI();
+        }
+
+        // Acheter une amélioration
+        function buyUpgrade(index) {
+            const upg = upgrades[index];
+            if (state.score >= upg.cost) {
+                state.score -= upg.cost;
+                upg.count++;
+                // Augmentation du coût (x1.15 à chaque achat)
+                upg.cost = Math.ceil(upg.baseCost * Math.pow(1.15, upg.count));
+                recalcProduction();
+                renderUpgrades(); // Re-render pour mettre à jour les prix/boutons
+                updateUI();
+            }
+        }
+
+        // Recalculer la production par seconde
+        function recalcProduction() {
+            let totalProd = 0;
+            upgrades.forEach(u => {
+                totalProd += (u.production * u.count);
+            });
+            state.perSecond = parseFloat(totalProd.toFixed(1));
+        }
+
+        // Boucle de jeu (1 fois par seconde)
+        setInterval(() => {
+            if (state.perSecond > 0) {
+                addScore(state.perSecond);
+            }
+        }, 1000);
+
+        // Mise à jour de l'affichage simple
+        function updateUI() {
+            scoreEl.innerText = Math.floor(state.score);
+            perSecEl.innerText = state.perSecond;
+            // Estimation fictive : 1 PC = ~200kg CO2 à la fabrication évité
+            co2El.innerText = (state.totalClicks * 200).toLocaleString(); 
+
+            // Vérifier si les boutons d'achat sont dispos
+            upgrades.forEach((u, index) => {
+                const el = document.getElementById(`upg-${index}`);
+                if (el) {
+                    if (state.score >= u.cost) {
+                        el.classList.remove('locked');
+                    } else {
+                        el.classList.add('locked');
+                    }
+                }
+            });
+        }
+
+        // Génération de la liste des upgrades (HTML)
+        function renderUpgrades() {
+            upgradesContainer.innerHTML = "";
+            upgrades.forEach((u, index) => {
+                // Calcul du coût actuel si pas encore fait (init)
+                if (!u.cost) u.cost = u.baseCost;
+
+                const isLocked = state.score < u.cost ? 'locked' : '';
+                
+                const html = `
+                <div id="upg-${index}" class="upgrade-item ${isLocked}" onclick="buyUpgrade(${index})">
+                    <div style="display:flex; align-items:center;">
+                        <div style="font-size: 2rem; margin-right: 1rem;">${u.icon || '📦'}</div>
+                        <div class="upgrade-info">
+                            <h4>${u.name} <span class="level-badge">Niv. ${u.count}</span></h4>
+                            <p>${u.desc}</p>
+                            <p style="font-size:0.8rem; color:var(--primary);">+${u.production} PC/sec</p>
+                        </div>
+                    </div>
+                    <div class="upgrade-cost">
+                        ${u.cost} PC
+                    </div>
+                </div>
+                `;
+                upgradesContainer.innerHTML += html;
+            });
+        }
+
+        // Initialisation
+        renderUpgrades();
+        updateUI();
+
+    </script>
+</body>
 </html>
