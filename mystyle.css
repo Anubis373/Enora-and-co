@@ -149,6 +149,7 @@ header p {
 
 .click-zone {
     background: white;
+    margin: 2rem auto;
     padding: 2rem;
     border-radius: 15px;
     text-align: center;
