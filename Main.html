@@ -3,260 +3,333 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake : Mode Progressif</title>
+    <title>Snake : Linux Army</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
         body {
-            background-color: #2c3e50;
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #000;
+            color: #33ff33;
+            font-family: 'VT323', monospace;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
             margin: 0;
+            overflow: hidden;
+            user-select: none; /* Empêche la sélection de texte */
         }
 
-        h1 { margin-bottom: 10px; }
+        /* Effets de texte néon */
+        h1, .subtitle, #ui-bar {
+            text-shadow: 0 0 5px #33ff33, 0 0 10px #33ff33;
+        }
 
-        /* Conteneur principal pour gérer la superposition du Game Over */
+        h1 { font-size: 50px; margin: 0; letter-spacing: 2px; }
+
+        .subtitle {
+            color: #ccc;
+            margin-bottom: 15px;
+            font-size: 20px;
+            text-shadow: none;
+            opacity: 0.8;
+        }
+
+        /* Cadre du jeu */
         #game-wrapper {
             position: relative;
-            box-shadow: 0 0 30px rgba(0,0,0,0.6);
-            border-radius: 4px;
-            overflow: hidden; /* Pour que le canvas ne dépasse pas si on arrondit les bords */
+            border: 4px solid #333;
+            border-radius: 12px;
+            box-shadow: 0 0 25px rgba(51, 255, 51, 0.2);
+            background-color: #101010;
         }
 
-        canvas {
-            background-color: #000;
-            display: block;
+        canvas { display: block; }
+
+        /* Lignes de balayage CRT */
+        .scanlines {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.2) 50%,
+                rgba(0,0,0,0.2)
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 5;
+            border-radius: 8px;
         }
 
-        /* Style de l'écran Game Over */
+        /* BSOD Style */
         #game-over-screen {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.85); /* Fond semi-transparent */
-            display: none; /* Caché par défaut */
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #0078d7; 
+            color: white;
+            display: none; 
             flex-direction: column;
-            align-items: center;
             justify-content: center;
+            padding: 40px;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
             z-index: 10;
         }
 
+        .sad-face { font-size: 80px; margin-bottom: 10px; }
+        
         #game-over-screen h2 {
-            font-size: 40px;
-            color: #e74c3c;
-            margin: 0 0 20px 0;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            font-size: 24px; font-weight: normal; margin: 0 0 20px 0;
         }
 
-        #final-score-text {
-            font-size: 24px;
-            margin-bottom: 30px;
-        }
-
-        /* Style du bouton */
         button {
-            padding: 15px 30px;
-            font-size: 18px;
-            background-color: #27ae60;
-            color: white;
-            border: none;
-            border-radius: 5px;
+            margin-top: 30px;
+            padding: 10px 25px;
+            font-family: 'VT323', monospace;
+            font-size: 24px;
+            background-color: #2d2d2d;
+            color: #33ff33;
+            border: 2px solid #33ff33;
             cursor: pointer;
-            transition: transform 0.1s, background-color 0.2s;
-            font-weight: bold;
+            box-shadow: 0 0 10px rgba(51, 255, 51, 0.3);
+            transition: all 0.2s;
         }
 
         button:hover {
-            background-color: #2ecc71;
-            transform: scale(1.05);
+            background-color: #33ff33;
+            color: black;
+            box-shadow: 0 0 20px rgba(51, 255, 51, 0.6);
         }
 
-        button:active {
-            transform: scale(0.95);
-        }
-
-        #live-score {
-            font-size: 20px;
+        #ui-bar {
             margin-top: 15px;
-            font-weight: bold;
-        }
-        
-        .instructions {
-            margin-top: 10px;
-            color: #95a5a6;
-            font-size: 14px;
+            font-size: 26px;
+            display: flex;
+            gap: 40px;
+            color: #33ff33;
         }
     </style>
 </head>
 <body>
 
-    <h1>Snake Pro 🐍</h1>
+    <h1>./SNAKE_TUX_EDITION</h1>
+    <div class="subtitle">Kernel Panic : Manger Windows pour survivre</div>
 
     <div id="game-wrapper">
-        <canvas id="gc" width="400" height="400"></canvas>
-        
-        <!-- Écran Game Over (superposé) -->
+        <canvas id="gc" width="500" height="500"></canvas>
+        <div class="scanlines"></div>
+
         <div id="game-over-screen">
-            <h2>Game Over</h2>
-            <div id="final-score-text">Score final : <span id="final-score">0</span></div>
-            <button onclick="resetGame()">Try Again 🔄</button>
+            <div class="sad-face">:(</div>
+            <h2>Votre PC a rencontré un problème.<br>Score final : <span id="final-score">0</span></h2>
+            <div style="font-size:14px; opacity:0.8; margin-top:20px;">Stop Code: DRIVER_IRQL_NOT_LESS_OR_EQUAL<br>Source: win32_bloatware.exe</div>
+            <button onclick="resetGame()">$ sudo reboot</button>
         </div>
     </div>
 
-    <div id="live-score">Score : <span id="score">0</span></div>
-    <div class="instructions">Les murs tuent • La vitesse augmente</div>
+    <div id="ui-bar">
+        <span>[SCORE]: <span id="score">0</span></span>
+        <span>[CPU]: <span id="speed-display">1x</span></span>
+    </div>
 
     <script>
         const canvas = document.getElementById('gc');
         const ctx = canvas.getContext('2d');
         
         const scoreSpan = document.getElementById('score');
+        const speedSpan = document.getElementById('speed-display');
         const gameOverScreen = document.getElementById('game-over-screen');
         const finalScoreSpan = document.getElementById('final-score');
 
-        // Configuration de la grille
-        const tileCount = 20; 
+        // Configuration
+        const tileCount = 16; // Moins de cases = cases plus grosses = plus jolis pingouins
         const gridSize = canvas.width / tileCount;
-
-        // Variables de jeu
-        let headX, headY;
-        let velocityX, velocityY;
-        let appleX, appleY;
+        
+        let headX, headY, velocityX, velocityY, appleX, appleY;
         let trail = [];
         let tailLength;
         let score;
         let isGameRunning = false;
         
-        // Gestion de la vitesse
-        let baseSpeed = 200; // Vitesse de départ (ms par image) - Plus c'est haut, plus c'est lent
+        let baseSpeed = 170;
         let currentSpeed = baseSpeed;
-        let gameTimeout; // Pour stocker le timer et pouvoir l'annuler
+        let gameTimeout;
 
-        // Pour empêcher le retournement rapide (bug classique du snake)
-        let lastInputDirection = ""; 
+        // Effet curseur console
+        let cursorVisible = true;
+        setInterval(() => { cursorVisible = !cursorVisible; }, 500);
 
-        // Initialisation au chargement
         window.onload = function() {
             document.addEventListener("keydown", keyPush);
             resetGame();
         };
 
         function resetGame() {
-            // Réinitialiser les variables
-            headX = 10;
-            headY = 10;
-            velocityX = 0;
-            velocityY = 0;
+            headX = Math.floor(tileCount / 2);
+            headY = Math.floor(tileCount / 2);
+            velocityX = 0; velocityY = 0;
             trail = [];
-            tailLength = 5;
+            tailLength = 4;
             score = 0;
             currentSpeed = baseSpeed;
-            lastInputDirection = "";
 
-            // Placer la première pomme
+            // Remplir le corps initial
+            for(let i=0; i<tailLength; i++) {
+                trail.push({x: headX, y: headY});
+            }
+
             placeApple();
-
-            // UI
             scoreSpan.innerText = score;
+            speedSpan.innerText = "1x";
             gameOverScreen.style.display = "none";
             isGameRunning = true;
 
-            // Lancer la boucle de jeu
             clearTimeout(gameTimeout);
             gameLoop();
         }
 
         function gameLoop() {
             if (!isGameRunning) return;
-
             update();
             draw();
-
-            // Rappeler la fonction avec la vitesse actuelle (vitesse variable)
             gameTimeout = setTimeout(gameLoop, currentSpeed);
         }
 
         function update() {
-            // Déplacement
             headX += velocityX;
             headY += velocityY;
 
-            // 1. Vérification Collision MURS (Game Over)
+            // Mort sur les murs
             if (headX < 0 || headX >= tileCount || headY < 0 || headY >= tileCount) {
                 triggerGameOver();
                 return;
             }
 
-            // 2. Vérification Collision SOI-MÊME (Game Over)
-            // On ne vérifie que si le serpent bouge
+            // Mort sur soi-même
             if (velocityX !== 0 || velocityY !== 0) {
-                for (let t of trail) {
-                    if (t.x === headX && t.y === headY) {
+                for (let i = 0; i < trail.length - 1; i++) {
+                    if (trail[i].x === headX && trail[i].y === headY) {
                         triggerGameOver();
                         return;
                     }
                 }
             }
 
-            // Mise à jour du corps du serpent
             trail.push({ x: headX, y: headY });
             while (trail.length > tailLength) {
                 trail.shift();
             }
 
-            // 3. Manger la pomme
             if (headX === appleX && headY === appleY) {
                 tailLength++;
                 score += 10;
                 scoreSpan.innerText = score;
                 
-                // ACCÉLÉRATION : On réduit le délai de 5ms à chaque pomme, minimum 50ms
-                if (currentSpeed > 50) {
-                    currentSpeed -= 5; 
+                if (currentSpeed > 60) {
+                    currentSpeed -= 4;
+                    speedSpan.innerText = (baseSpeed / currentSpeed).toFixed(1) + "x";
                 }
-
                 placeApple();
             }
         }
 
         function draw() {
-            // Fond noir
-            ctx.fillStyle = "black";
+            // Fond
+            ctx.fillStyle = "#101010";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Pomme (Rouge)
-            ctx.fillStyle = "#e74c3c";
-            // Un petit effet arrondi pour la pomme
-            ctx.fillRect(appleX * gridSize + 1, appleY * gridSize + 1, gridSize - 2, gridSize - 2);
+            // Grille terminale
+            ctx.strokeStyle = "#1a1a1a";
+            ctx.lineWidth = 1;
+            for(let i=0; i<tileCount; i++) {
+                ctx.beginPath(); ctx.moveTo(i*gridSize, 0); ctx.lineTo(i*gridSize, canvas.height); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(0, i*gridSize); ctx.lineTo(canvas.width, i*gridSize); ctx.stroke();
+            }
 
-            // Serpent (Vert)
-            ctx.fillStyle = "#2ecc71";
+            // Prompt en fond
+            ctx.font = "18px 'VT323', monospace";
+            ctx.fillStyle = "#33ff33";
+            ctx.textAlign = "left";
+            ctx.fillText("root@kali:~/snake# ./eat_microsoft.sh", 10, 25);
+            if(cursorVisible) ctx.fillRect(320, 12, 10, 16);
+
+            // Dessin Pomme (Windows)
+            drawWindowsLogo(appleX * gridSize, appleY * gridSize, gridSize);
+
+            // Dessin Serpent (Tux Army)
             for (let i = 0; i < trail.length; i++) {
-                // Tête un peu plus claire ou différente si on veut, ici tout est vert
-                ctx.fillRect(trail[i].x * gridSize, trail[i].y * gridSize, gridSize - 1, gridSize - 1);
+                drawTux(trail[i].x * gridSize, trail[i].y * gridSize, gridSize);
             }
         }
 
+        // --- FONCTION DE DESSIN DU PINGOUIN (Canvas) ---
+        function drawTux(x, y, size) {
+            const cx = x + size/2; // Centre X
+            const cy = y + size/2; // Centre Y
+            const s = size; // Facteur de taille
+
+            // 1. Les Pieds (Orange/Jaune)
+            ctx.fillStyle = "#FFC107";
+            ctx.beginPath();
+            // Pied gauche
+            ctx.ellipse(cx - s*0.2, cy + s*0.35, s*0.15, s*0.1, 0, 0, Math.PI*2);
+            // Pied droit
+            ctx.ellipse(cx + s*0.2, cy + s*0.35, s*0.15, s*0.1, 0, 0, Math.PI*2);
+            ctx.fill();
+
+            // 2. Le Corps (Noir) - Forme ovoïde
+            ctx.fillStyle = "#000";
+            ctx.beginPath();
+            ctx.ellipse(cx, cy, s*0.38, s*0.42, 0, 0, Math.PI*2);
+            ctx.fill();
+
+            // 3. Le Ventre (Blanc)
+            ctx.fillStyle = "#FFF";
+            ctx.beginPath();
+            ctx.ellipse(cx, cy + s*0.1, s*0.22, s*0.28, 0, 0, Math.PI*2);
+            ctx.fill();
+
+            // 4. Les Yeux
+            ctx.fillStyle = "#FFF";
+            // Blanc des yeux
+            ctx.beginPath(); ctx.arc(cx - s*0.12, cy - s*0.15, s*0.09, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(cx + s*0.12, cy - s*0.15, s*0.09, 0, Math.PI*2); ctx.fill();
+            // Pupilles noires
+            ctx.fillStyle = "#000";
+            ctx.beginPath(); ctx.arc(cx - s*0.1, cy - s*0.15, s*0.03, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(cx + s*0.14, cy - s*0.15, s*0.03, 0, Math.PI*2); ctx.fill();
+
+            // 5. Le Bec (Orange)
+            ctx.fillStyle = "#FF9800";
+            ctx.beginPath();
+            ctx.ellipse(cx, cy - s*0.02, s*0.1, s*0.04, 0, 0, Math.PI*2);
+            ctx.fill();
+        }
+
+        function drawWindowsLogo(x, y, size) {
+            let pad = size * 0.15; // Espace dynamique
+            let half = (size / 2) - pad;
+            let offset = pad; 
+
+            ctx.shadowBlur = 0;
+            // Rouge / Vert / Bleu / Jaune
+            ctx.fillStyle = "#f35325"; ctx.fillRect(x + offset, y + offset, half, half);
+            ctx.fillStyle = "#81bc06"; ctx.fillRect(x + half + pad, y + offset, half, half);
+            ctx.fillStyle = "#05a6f0"; ctx.fillRect(x + offset, y + half + pad, half, half);
+            ctx.fillStyle = "#ffba08"; ctx.fillRect(x + half + pad, y + half + pad, half, half);
+        }
+
         function placeApple() {
-            // Position aléatoire, mais on s'assure qu'elle n'est pas SUR le serpent
-            let validPosition = false;
-            while(!validPosition) {
+            let valid = false;
+            while(!valid) {
                 appleX = Math.floor(Math.random() * tileCount);
                 appleY = Math.floor(Math.random() * tileCount);
-                
-                validPosition = true;
+                valid = true;
                 for(let t of trail) {
-                    if(t.x === appleX && t.y === appleY) {
-                        validPosition = false;
-                        break;
-                    }
+                    if(t.x === appleX && t.y === appleY) valid = false;
                 }
             }
         }
@@ -264,36 +337,16 @@
         function triggerGameOver() {
             isGameRunning = false;
             finalScoreSpan.innerText = score;
-            gameOverScreen.style.display = "flex"; // Affiche l'écran de fin
+            gameOverScreen.style.display = "flex";
         }
 
         function keyPush(evt) {
             if (!isGameRunning) return;
-
-            // Empêcher de faire demi-tour directement (ex: aller gauche quand on va droite)
-            // Utilisation de lastInputDirection pour éviter les bugs de frappe rapide
-            
             switch(evt.keyCode) {
-                case 37: // Gauche
-                    if (velocityX !== 1) { 
-                        velocityX = -1; velocityY = 0; 
-                    }
-                    break;
-                case 38: // Haut
-                    if (velocityY !== 1) { 
-                        velocityX = 0; velocityY = -1; 
-                    }
-                    break;
-                case 39: // Droite
-                    if (velocityX !== -1) { 
-                        velocityX = 1; velocityY = 0; 
-                    }
-                    break;
-                case 40: // Bas
-                    if (velocityY !== -1) { 
-                        velocityX = 0; velocityY = 1; 
-                    }
-                    break;
+                case 37: if(velocityX !== 1) { velocityX = -1; velocityY = 0; } break;
+                case 38: if(velocityY !== 1) { velocityX = 0; velocityY = -1; } break;
+                case 39: if(velocityX !== -1) { velocityX = 1; velocityY = 0; } break;
+                case 40: if(velocityY !== -1) { velocityX = 0; velocityY = 1; } break;
             }
         }
     </script>
