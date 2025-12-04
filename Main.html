@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake : Linux Army</title>
+    <title>Snake : Matrix Final Version</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
         body {
             background-color: #000;
-            color: #33ff33;
-            font-family: 'VT323', monospace;
+            color: #0F0;
+            font-family: 'Share Tech Mono', monospace;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -18,149 +18,144 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
-            user-select: none; /* Empêche la sélection de texte */
+            user-select: none;
         }
 
-        /* Effets de texte néon */
-        h1, .subtitle, #ui-bar {
-            text-shadow: 0 0 5px #33ff33, 0 0 10px #33ff33;
-        }
-
+        h1, .subtitle { text-shadow: 0 0 8px #0F0; }
         h1 { font-size: 50px; margin: 0; letter-spacing: 2px; }
+        .subtitle { color: #88ff88; margin-bottom: 10px; font-size: 18px; opacity: 0.8; }
 
-        .subtitle {
-            color: #ccc;
-            margin-bottom: 15px;
-            font-size: 20px;
-            text-shadow: none;
-            opacity: 0.8;
-        }
-
-        /* Cadre du jeu */
         #game-wrapper {
             position: relative;
-            border: 4px solid #333;
-            border-radius: 12px;
-            box-shadow: 0 0 25px rgba(51, 255, 51, 0.2);
-            background-color: #101010;
+            border: 2px solid #005500;
+            border-radius: 4px;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
+            background-color: #000;
         }
 
         canvas { display: block; }
 
-        /* Lignes de balayage CRT */
         .scanlines {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(
-                to bottom,
-                rgba(255,255,255,0),
-                rgba(255,255,255,0) 50%,
-                rgba(0,0,0,0.2) 50%,
-                rgba(0,0,0,0.2)
-            );
-            background-size: 100% 4px;
-            pointer-events: none;
-            z-index: 5;
-            border-radius: 8px;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.2) 50%);
+            background-size: 100% 4px; pointer-events: none; z-index: 5;
         }
 
-        /* BSOD Style */
+        /* HUD */
+        #matrix-hud { position: absolute; top: 15px; right: 20px; text-align: right; z-index: 6; pointer-events: none; }
+        .hud-label { font-size: 14px; color: #00AA00; display: block; }
+        #matrix-score-val { font-size: 40px; color: #0F0; text-shadow: 0 0 10px #0F0; font-weight: bold; }
+
+        /* Status Effects HUD */
+        #status-effects {
+            position: absolute; top: 15px; left: 20px; z-index: 6; pointer-events: none;
+            display: flex; flex-direction: column; gap: 5px;
+        }
+        .status-msg { font-size: 16px; font-weight: bold; text-shadow: 0 0 5px currentColor; }
+
+        /* Game Over */
         #game-over-screen {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #0078d7; 
-            color: white;
-            display: none; 
-            flex-direction: column;
-            justify-content: center;
-            padding: 40px;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', sans-serif;
-            z-index: 10;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #0078d7; color: white; display: none;
+            flex-direction: column; justify-content: center; padding: 40px;
+            box-sizing: border-box; font-family: 'Segoe UI', sans-serif; z-index: 10;
         }
-
         .sad-face { font-size: 80px; margin-bottom: 10px; }
-        
-        #game-over-screen h2 {
-            font-size: 24px; font-weight: normal; margin: 0 0 20px 0;
-        }
+        #game-over-screen h2 { font-size: 24px; font-weight: normal; margin: 0 0 20px 0; text-shadow: none; }
 
         button {
-            margin-top: 30px;
-            padding: 10px 25px;
-            font-family: 'VT323', monospace;
-            font-size: 24px;
-            background-color: #2d2d2d;
-            color: #33ff33;
-            border: 2px solid #33ff33;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(51, 255, 51, 0.3);
-            transition: all 0.2s;
+            margin-top: 30px; padding: 10px 25px; font-family: 'Share Tech Mono', monospace;
+            font-size: 24px; background-color: #000; color: #0F0;
+            border: 2px solid #0F0; cursor: pointer; box-shadow: 0 0 10px rgba(0, 255, 0, 0.3); transition: all 0.2s;
         }
+        button:hover { background-color: #0F0; color: black; box-shadow: 0 0 20px rgba(0, 255, 0, 0.8); }
 
-        button:hover {
-            background-color: #33ff33;
-            color: black;
-            box-shadow: 0 0 20px rgba(51, 255, 51, 0.6);
+        #legend {
+            margin-top: 10px; display: flex; gap: 15px; font-size: 14px;
         }
-
-        #ui-bar {
-            margin-top: 15px;
-            font-size: 26px;
-            display: flex;
-            gap: 40px;
-            color: #33ff33;
-        }
+        .legend-item span { font-weight: bold; margin-right: 5px; }
     </style>
 </head>
 <body>
 
-    <h1>./SNAKE_TUX_EDITION</h1>
-    <div class="subtitle">Kernel Panic : Manger Windows pour survivre</div>
+    <h1>THE SNAKE MATRIX</h1>
+    <div class="subtitle">System Override: Linux vs Win32</div>
 
     <div id="game-wrapper">
-        <canvas id="gc" width="500" height="500"></canvas>
+        <canvas id="gc" width="512" height="512"></canvas>
+        
+        <div id="matrix-hud">
+            <span class="hud-label">DATA COLLECTED</span>
+            <span id="matrix-score-val">0</span>
+        </div>
+
+        <div id="status-effects"></div>
         <div class="scanlines"></div>
 
         <div id="game-over-screen">
             <div class="sad-face">:(</div>
-            <h2>Votre PC a rencontré un problème.<br>Score final : <span id="final-score">0</span></h2>
-            <div style="font-size:14px; opacity:0.8; margin-top:20px;">Stop Code: DRIVER_IRQL_NOT_LESS_OR_EQUAL<br>Source: win32_bloatware.exe</div>
-            <button onclick="resetGame()">$ sudo reboot</button>
+            <h2>SYSTEM FAILURE.<br>Final Data: <span id="final-score">0</span></h2>
+            <div style="font-size:14px; opacity:0.8; margin-top:20px;">FATAL_ERROR: 0x0000DEAD<br>Process "Tux" terminated unexpectedly.</div>
+            <button onclick="resetGame()">REBOOT SYSTEM</button>
         </div>
     </div>
-
-    <div id="ui-bar">
-        <span>[SCORE]: <span id="score">0</span></span>
-        <span>[CPU]: <span id="speed-display">1x</span></span>
+    
+    <div id="legend">
+        <div class="legend-item"><span style="color:#00ffff">C:</span>Slow</div>
+        <div class="legend-item"><span style="color:#ffff00">P:</span>Cut Tail</div>
+        <div class="legend-item"><span style="color:#ff0000">B:</span>Fast</div>
+        <div class="legend-item"><span style="color:#ff00ff">V:</span>Virus (Reverse)</div>
     </div>
 
     <script>
         const canvas = document.getElementById('gc');
         const ctx = canvas.getContext('2d');
-        
-        const scoreSpan = document.getElementById('score');
-        const speedSpan = document.getElementById('speed-display');
+        const matrixScoreEl = document.getElementById('matrix-score-val');
         const gameOverScreen = document.getElementById('game-over-screen');
         const finalScoreSpan = document.getElementById('final-score');
+        const statusEffectsEl = document.getElementById('status-effects');
 
-        // Configuration
-        const tileCount = 16; // Moins de cases = cases plus grosses = plus jolis pingouins
+        const tileCount = 16; 
         const gridSize = canvas.width / tileCount;
         
+        // --- Variables Jeu ---
         let headX, headY, velocityX, velocityY, appleX, appleY;
         let trail = [];
         let tailLength;
         let score;
         let isGameRunning = false;
-        
-        let baseSpeed = 170;
-        let currentSpeed = baseSpeed;
-        let gameTimeout;
+        let inputQueue = [];
 
-        // Effet curseur console
-        let cursorVisible = true;
-        setInterval(() => { cursorVisible = !cursorVisible; }, 500);
+        // --- Variables Temps & Vitesse ---
+        let lastTime = 0;
+        let dropCounter = 0;
+        let dropInterval = 200;
+        let baseSpeed = 200; 
+
+        // --- Effets & Malus ---
+        let particles = [];
+        let floatingTexts = [];
+        let activeItems = []; 
+        let itemsTimer = 0;   
+        
+        let isControlsReversed = false;
+        let reverseTimeout = null;
+
+        // --- Matrix Rain ---
+        const katakana = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const characters = katakana.split('');
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = []; 
+        for(let x = 0; x < columns; x++) drops[x] = Math.random() * canvas.height;
+
+        // --- ITEMS ---
+        const ITEM_TYPES = {
+            SLOW: { color: '#00ffff', label: 'C', name: 'COFFEE (Slow)', duration: 0 },
+            CUT:  { color: '#ffff00', label: 'P', name: 'PURGE (Cut)', duration: 0 },
+            FAST: { color: '#ff0000', label: 'B', name: 'BLOATWARE (Fast)', duration: 0 },
+            VIRUS:{ color: '#ff00ff', label: 'V', name: 'VIRUS (Reverse)', duration: 5000 }
+        };
 
         window.onload = function() {
             document.addEventListener("keydown", keyPush);
@@ -174,41 +169,114 @@
             trail = [];
             tailLength = 4;
             score = 0;
-            currentSpeed = baseSpeed;
+            matrixScoreEl.innerText = "0";
+            inputQueue = [];
+            
+            baseSpeed = 200;
+            dropInterval = baseSpeed;
+            
+            particles = [];
+            floatingTexts = [];
+            activeItems = [];
+            itemsTimer = 0;
+            
+            isControlsReversed = false;
+            clearTimeout(reverseTimeout);
+            updateStatusUI();
 
-            // Remplir le corps initial
-            for(let i=0; i<tailLength; i++) {
-                trail.push({x: headX, y: headY});
-            }
+            for(let i=0; i<tailLength; i++) trail.push({x: headX, y: headY});
 
             placeApple();
-            scoreSpan.innerText = score;
-            speedSpan.innerText = "1x";
             gameOverScreen.style.display = "none";
             isGameRunning = true;
-
-            clearTimeout(gameTimeout);
-            gameLoop();
+            
+            lastTime = 0;
+            dropCounter = 0;
+            requestAnimationFrame(gameLoop);
         }
 
-        function gameLoop() {
+        function gameLoop(time = 0) {
             if (!isGameRunning) return;
-            update();
+            const deltaTime = time - lastTime;
+            lastTime = time;
+            dropCounter += deltaTime;
+
+            manageItems(deltaTime);
+
+            if (dropCounter > dropInterval) {
+                updateSnake();
+                dropCounter = 0;
+            }
+
             draw();
-            gameTimeout = setTimeout(gameLoop, currentSpeed);
+            requestAnimationFrame(gameLoop);
         }
 
-        function update() {
+        function manageItems(dt) {
+            itemsTimer += dt;
+            
+            // Apparition item
+            if (itemsTimer > 4000 && activeItems.length < 2) {
+                itemsTimer = 0;
+                if(Math.random() > 0.3) { 
+                    spawnItem();
+                }
+            }
+
+            // Gestion de la disparition (Durée de vie)
+            for (let i = 0; i < activeItems.length; i++) {
+                activeItems[i].timeLeft -= dt;
+                
+                // Si le temps est écoulé, on supprime l'item
+                if (activeItems[i].timeLeft <= 0) {
+                    activeItems.splice(i, 1);
+                    i--; // Ajuster l'index car le tableau a rétréci
+                }
+            }
+        }
+
+        function spawnItem() {
+            const keys = Object.keys(ITEM_TYPES);
+            const randomKey = keys[Math.floor(Math.random() * keys.length)];
+            const type = ITEM_TYPES[randomKey];
+
+            let valid = false;
+            let ix, iy;
+            while(!valid) {
+                ix = Math.floor(Math.random() * tileCount);
+                iy = Math.floor(Math.random() * tileCount);
+                valid = true;
+                for(let t of trail) if(t.x === ix && t.y === iy) valid = false;
+                if(ix === appleX && iy === appleY) valid = false;
+                for(let it of activeItems) if(it.x === ix && it.y === iy) valid = false;
+            }
+
+            activeItems.push({ 
+                x: ix, 
+                y: iy, 
+                type: type, 
+                typeKey: randomKey,
+                timeLeft: 8000 // 8 secondes de vie
+            });
+        }
+
+        function updateSnake() {
+            if (inputQueue.length > 0) {
+                let nextMove = inputQueue.shift();
+                velocityX = nextMove.x;
+                velocityY = nextMove.y;
+            }
+
             headX += velocityX;
             headY += velocityY;
 
-            // Mort sur les murs
+            // Murs
             if (headX < 0 || headX >= tileCount || headY < 0 || headY >= tileCount) {
                 triggerGameOver();
                 return;
             }
 
-            // Mort sur soi-même
+            // Queue
             if (velocityX !== 0 || velocityY !== 0) {
                 for (let i = 0; i < trail.length - 1; i++) {
                     if (trail[i].x === headX && trail[i].y === headY) {
@@ -218,136 +286,237 @@
                 }
             }
 
+            // Items
+            for (let i = 0; i < activeItems.length; i++) {
+                let item = activeItems[i];
+                if (headX === item.x && headY === item.y) {
+                    applyItemEffect(item);
+                    activeItems.splice(i, 1);
+                    i--;
+                }
+            }
+
             trail.push({ x: headX, y: headY });
             while (trail.length > tailLength) {
                 trail.shift();
             }
 
+            // Pomme
             if (headX === appleX && headY === appleY) {
                 tailLength++;
                 score += 10;
-                scoreSpan.innerText = score;
-                
-                if (currentSpeed > 60) {
-                    currentSpeed -= 4;
-                    speedSpan.innerText = (baseSpeed / currentSpeed).toFixed(1) + "x";
-                }
+                glitchScore(score);
+                if (baseSpeed > 60) baseSpeed -= 4;
+                dropInterval = baseSpeed;
+
+                createExplosion(appleX, appleY, "#00FF00");
+                createFloatingText(appleX, appleY, "WIN32_DEL");
                 placeApple();
             }
         }
 
+        function applyItemEffect(item) {
+            const type = item.type;
+            createFloatingText(headX, headY, type.name, type.color);
+            createExplosion(headX, headY, type.color);
+
+            switch(item.typeKey) {
+                case 'SLOW':
+                    dropInterval += 100; 
+                    if(dropInterval > 400) dropInterval = 400;
+                    break;
+                case 'CUT': 
+                    let cutAmount = Math.floor(tailLength / 2);
+                    if (tailLength - cutAmount < 3) cutAmount = tailLength - 3;
+                    if (cutAmount > 0) {
+                        tailLength -= cutAmount;
+                        trail.splice(0, cutAmount); 
+                    }
+                    break;
+                case 'FAST': 
+                    dropInterval -= 80;
+                    if(dropInterval < 40) dropInterval = 40;
+                    break;
+                case 'VIRUS':
+                    triggerReverseControls();
+                    break;
+            }
+        }
+
+        function triggerReverseControls() {
+            isControlsReversed = true;
+            updateStatusUI();
+            clearTimeout(reverseTimeout);
+            reverseTimeout = setTimeout(() => {
+                isControlsReversed = false;
+                updateStatusUI();
+                createFloatingText(headX, headY, "ANTIVIRUS DONE", "#FFFFFF");
+            }, 5000);
+        }
+
+        function updateStatusUI() {
+            statusEffectsEl.innerHTML = "";
+            if(isControlsReversed) {
+                const div = document.createElement("div");
+                div.className = "status-msg";
+                div.style.color = "#ff00ff";
+                div.innerText = "⚠ CONTROLS REVERSED";
+                statusEffectsEl.appendChild(div);
+            }
+        }
+
+        function glitchScore(target) {
+            let iteration = 0;
+            const interval = setInterval(() => {
+                matrixScoreEl.innerText = Math.floor(Math.random() * (target + 100));
+                iteration++;
+                if (iteration >= 5) {
+                    clearInterval(interval);
+                    matrixScoreEl.innerText = target;
+                }
+            }, 30);
+        }
+
         function draw() {
             // Fond
-            ctx.fillStyle = "#101010";
+            ctx.fillStyle = "rgba(0, 0, 0, 0.1)"; 
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#003300"; ctx.font = fontSize + "px monospace";
+            for(let i = 0; i < drops.length; i++) {
+                if(Math.random() > 0.98) {
+                   const text = characters[Math.floor(Math.random() * characters.length)];
+                   ctx.fillStyle = (Math.random() > 0.9) ? "#00FF00" : "#004400";
+                   ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                }
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.98) drops[i] = 0;
+                drops[i]++;
+            }
 
-            // Grille terminale
-            ctx.strokeStyle = "#1a1a1a";
-            ctx.lineWidth = 1;
+            // Grille
+            ctx.strokeStyle = "rgba(0, 255, 0, 0.1)"; ctx.lineWidth = 1;
             for(let i=0; i<tileCount; i++) {
                 ctx.beginPath(); ctx.moveTo(i*gridSize, 0); ctx.lineTo(i*gridSize, canvas.height); ctx.stroke();
                 ctx.beginPath(); ctx.moveTo(0, i*gridSize); ctx.lineTo(canvas.width, i*gridSize); ctx.stroke();
             }
 
-            // Prompt en fond
-            ctx.font = "18px 'VT323', monospace";
-            ctx.fillStyle = "#33ff33";
-            ctx.textAlign = "left";
-            ctx.fillText("root@kali:~/snake# ./eat_microsoft.sh", 10, 25);
-            if(cursorVisible) ctx.fillRect(320, 12, 10, 16);
+            // Prompt
+            ctx.font = "16px 'Share Tech Mono', monospace"; ctx.fillStyle = "#00FF00"; ctx.textAlign = "left";
+            ctx.fillText("root@matrix:~/sys$ ./snake_v2.0", 10, 25);
 
-            // Dessin Pomme (Windows)
+            // Dessins Objets
+            for(let item of activeItems) {
+                // Gestion du clignotement
+                ctx.globalAlpha = 1.0;
+                
+                // Si il reste moins de 3 secondes (3000ms), on fait clignoter
+                if (item.timeLeft < 3000) {
+                    // Clignote toutes les 200ms
+                    if (Math.floor(item.timeLeft / 200) % 2 === 0) {
+                        ctx.globalAlpha = 0.3; // Presque invisible
+                    }
+                }
+                
+                drawItem(item.x * gridSize, item.y * gridSize, gridSize, item.type);
+                ctx.globalAlpha = 1.0; // Reset opacité
+            }
+
             drawWindowsLogo(appleX * gridSize, appleY * gridSize, gridSize);
+            for (let i = 0; i < trail.length; i++) drawTux(trail[i].x * gridSize, trail[i].y * gridSize, gridSize);
+            
+            updateAndDrawParticles();
+        }
 
-            // Dessin Serpent (Tux Army)
-            for (let i = 0; i < trail.length; i++) {
-                drawTux(trail[i].x * gridSize, trail[i].y * gridSize, gridSize);
+        function drawItem(x, y, size, type) {
+            ctx.shadowBlur = 15; ctx.shadowColor = type.color;
+            ctx.fillStyle = "rgba(0,0,0,0.8)"; ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
+            ctx.strokeStyle = type.color; ctx.lineWidth = 2; ctx.strokeRect(x + 4, y + 4, size - 8, size - 8);
+            ctx.fillStyle = type.color; ctx.font = "bold " + (size*0.7) + "px monospace";
+            ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(type.label, x + size/2, y + size/2 + 2);
+            ctx.shadowBlur = 0; 
+        }
+
+        function updateAndDrawParticles() {
+             for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i]; p.x += p.vx; p.y += p.vy; p.life -= 0.03;
+                if (p.life <= 0) particles.splice(i, 1);
+                else { ctx.globalAlpha = p.life; ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, p.size, p.size); ctx.globalAlpha = 1.0; }
+            }
+            for (let i = floatingTexts.length - 1; i >= 0; i--) {
+                let ft = floatingTexts[i]; ft.y += ft.vy; ft.life -= 0.015;
+                if (ft.life <= 0) floatingTexts.splice(i, 1);
+                else { ctx.globalAlpha = ft.life; ctx.font = "bold 16px monospace"; ctx.fillStyle = ft.color; ctx.textAlign = "center"; ctx.shadowBlur = 5; ctx.shadowColor = ft.color; ctx.fillText(ft.text, ft.x, ft.y); ctx.shadowBlur = 0; ctx.globalAlpha = 1.0; }
             }
         }
 
-        // --- FONCTION DE DESSIN DU PINGOUIN (Canvas) ---
-        function drawTux(x, y, size) {
-            const cx = x + size/2; // Centre X
-            const cy = y + size/2; // Centre Y
-            const s = size; // Facteur de taille
-
-            // 1. Les Pieds (Orange/Jaune)
-            ctx.fillStyle = "#FFC107";
-            ctx.beginPath();
-            // Pied gauche
-            ctx.ellipse(cx - s*0.2, cy + s*0.35, s*0.15, s*0.1, 0, 0, Math.PI*2);
-            // Pied droit
-            ctx.ellipse(cx + s*0.2, cy + s*0.35, s*0.15, s*0.1, 0, 0, Math.PI*2);
-            ctx.fill();
-
-            // 2. Le Corps (Noir) - Forme ovoïde
-            ctx.fillStyle = "#000";
-            ctx.beginPath();
-            ctx.ellipse(cx, cy, s*0.38, s*0.42, 0, 0, Math.PI*2);
-            ctx.fill();
-
-            // 3. Le Ventre (Blanc)
-            ctx.fillStyle = "#FFF";
-            ctx.beginPath();
-            ctx.ellipse(cx, cy + s*0.1, s*0.22, s*0.28, 0, 0, Math.PI*2);
-            ctx.fill();
-
-            // 4. Les Yeux
-            ctx.fillStyle = "#FFF";
-            // Blanc des yeux
-            ctx.beginPath(); ctx.arc(cx - s*0.12, cy - s*0.15, s*0.09, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(cx + s*0.12, cy - s*0.15, s*0.09, 0, Math.PI*2); ctx.fill();
-            // Pupilles noires
-            ctx.fillStyle = "#000";
-            ctx.beginPath(); ctx.arc(cx - s*0.1, cy - s*0.15, s*0.03, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(cx + s*0.14, cy - s*0.15, s*0.03, 0, Math.PI*2); ctx.fill();
-
-            // 5. Le Bec (Orange)
-            ctx.fillStyle = "#FF9800";
-            ctx.beginPath();
-            ctx.ellipse(cx, cy - s*0.02, s*0.1, s*0.04, 0, 0, Math.PI*2);
-            ctx.fill();
+        function createExplosion(x, y, color) {
+            const cx = x * gridSize + gridSize/2; const cy = y * gridSize + gridSize/2;
+            for(let i=0; i<10; i++) particles.push({ x: cx, y: cy, vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.5) * 12, life: 1.0, color: color, size: Math.random()*5+2 });
+        }
+        function createFloatingText(x, y, text, color="#0F0") {
+            const cx = x * gridSize + gridSize/2; const cy = y * gridSize;
+            floatingTexts.push({ x: cx, y: cy, text: text, life: 1.0, vy: -1.0, color: color });
         }
 
+        function drawTux(x, y, size) {
+            const cx = x + size/2; const cy = y + size/2; const s = size;
+            if(isControlsReversed) ctx.shadowColor = "#ff00ff"; else ctx.shadowColor = "transparent";
+            ctx.shadowBlur = isControlsReversed ? 10 : 0;
+            ctx.fillStyle = "#FFAA00"; ctx.beginPath(); ctx.ellipse(cx - s*0.2, cy + s*0.35, s*0.15, s*0.1, 0, 0, Math.PI*2); ctx.ellipse(cx + s*0.2, cy + s*0.35, s*0.15, s*0.1, 0, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = "#000"; ctx.beginPath(); ctx.ellipse(cx, cy, s*0.38, s*0.42, 0, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = "#FFF"; ctx.beginPath(); ctx.ellipse(cx, cy + s*0.1, s*0.22, s*0.28, 0, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = "#FFF"; ctx.beginPath(); ctx.arc(cx - s*0.12, cy - s*0.15, s*0.09, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(cx + s*0.12, cy - s*0.15, s*0.09, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = "#000"; ctx.beginPath(); ctx.arc(cx - s*0.1, cy - s*0.15, s*0.03, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(cx + s*0.14, cy - s*0.15, s*0.03, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = "#FF8800"; ctx.beginPath(); ctx.ellipse(cx, cy - s*0.02, s*0.1, s*0.04, 0, 0, Math.PI*2); ctx.fill();
+            ctx.shadowBlur = 0; 
+        }
+        
         function drawWindowsLogo(x, y, size) {
-            let pad = size * 0.15; // Espace dynamique
-            let half = (size / 2) - pad;
-            let offset = pad; 
-
-            ctx.shadowBlur = 0;
-            // Rouge / Vert / Bleu / Jaune
+            let pad = size * 0.15; let half = (size / 2) - pad; let offset = pad; 
             ctx.fillStyle = "#f35325"; ctx.fillRect(x + offset, y + offset, half, half);
             ctx.fillStyle = "#81bc06"; ctx.fillRect(x + half + pad, y + offset, half, half);
             ctx.fillStyle = "#05a6f0"; ctx.fillRect(x + offset, y + half + pad, half, half);
             ctx.fillStyle = "#ffba08"; ctx.fillRect(x + half + pad, y + half + pad, half, half);
         }
-
+        function triggerGameOver() { isGameRunning = false; finalScoreSpan.innerText = score; gameOverScreen.style.display = "flex"; }
         function placeApple() {
             let valid = false;
-            while(!valid) {
-                appleX = Math.floor(Math.random() * tileCount);
-                appleY = Math.floor(Math.random() * tileCount);
-                valid = true;
-                for(let t of trail) {
-                    if(t.x === appleX && t.y === appleY) valid = false;
-                }
-            }
+            while(!valid) { appleX = Math.floor(Math.random() * tileCount); appleY = Math.floor(Math.random() * tileCount); valid = true; for(let t of trail) { if(t.x === appleX && t.y === appleY) valid = false; } }
         }
 
-        function triggerGameOver() {
-            isGameRunning = false;
-            finalScoreSpan.innerText = score;
-            gameOverScreen.style.display = "flex";
-        }
-
+        // --- FONCTION CLAVIER ---
         function keyPush(evt) {
             if (!isGameRunning) return;
-            switch(evt.keyCode) {
-                case 37: if(velocityX !== 1) { velocityX = -1; velocityY = 0; } break;
-                case 38: if(velocityY !== 1) { velocityX = 0; velocityY = -1; } break;
-                case 39: if(velocityX !== -1) { velocityX = 1; velocityY = 0; } break;
-                case 40: if(velocityY !== -1) { velocityX = 0; velocityY = 1; } break;
+
+            let currentVx = velocityX;
+            let currentVy = velocityY;
+            if (inputQueue.length > 0) {
+                const lastMove = inputQueue[inputQueue.length - 1];
+                currentVx = lastMove.x; currentVy = lastMove.y;
             }
+
+            let nextVx = 0; let nextVy = 0;
+            let key = evt.keyCode;
+
+            // Inversion contrôles si Virus
+            if (isControlsReversed) {
+                if (key === 37) key = 39;
+                else if (key === 39) key = 37;
+                else if (key === 38) key = 40;
+                else if (key === 40) key = 38;
+            }
+
+            switch(key) {
+                case 37: nextVx = -1; nextVy = 0; break; // Gauche
+                case 38: nextVx = 0; nextVy = -1; break; // Haut
+                case 39: nextVx = 1; nextVy = 0; break; // Droite
+                case 40: nextVx = 0; nextVy = 1; break; // Bas
+                default: return;
+            }
+
+            if (currentVx !== 0 && nextVx === -currentVx) return;
+            if (currentVy !== 0 && nextVy === -currentVy) return;
+
+            if (inputQueue.length < 2) inputQueue.push({x: nextVx, y: nextVy});
         }
     </script>
 </body>
