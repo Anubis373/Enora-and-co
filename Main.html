@@ -1,397 +1,301 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NIRD - Le Clicker de la Résistance</title>
+    <title>Snake : Mode Progressif</title>
     <style>
-        :root {
-            --primary: #e67e22; /* Orange Artisanat */
-            --secondary: #2c3e50; /* Bleu Nuit */
-            --accent: #27ae60; /* Vert Durable */
-            --light: #f5f6fa;
-            --dark: #1a252f;
-            --danger: #c0392b;
-        }
-
         body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            padding: 0;
-            color: var(--dark);
-            background-color: var(--light);
-        }
-
-        /* --- Header --- */
-        header {
-            background: var(--secondary);
+            background-color: #2c3e50;
             color: white;
-            padding: 2rem;
-            text-align: center;
-        }
-
-        header h1 { margin: 0; font-size: 2.5rem; }
-        header p { color: var(--primary); font-weight: bold; margin-top: 0.5rem; }
-
-        /* --- Layout Clicker --- */
-        .game-container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            display: grid;
-            grid-template-columns: 1fr 1.5fr; /* Colonne gauche info, droite shop */
-            gap: 2rem;
-            padding: 0 1rem;
-        }
-
-        /* --- Zone Gauche : Le PC à libérer --- */
-        .click-zone {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 2rem;
-            height: fit-content;
-        }
-
-        .score-display {
-            font-size: 3rem;
-            font-weight: bold;
-            color: var(--accent);
-            display: block;
-        }
-
-        .score-label {
-            font-size: 1.2rem;
-            color: #7f8c8d;
-            margin-bottom: 2rem;
-        }
-
-        #main-btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            font-size: 1.5rem;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 10px 0 #d35400;
-            transition: all 0.1s;
-            margin-bottom: 2rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        #main-btn:active {
-            transform: translateY(10px);
-            box-shadow: 0 0 0 #d35400;
-        }
-
-        #main-btn::after {
-            content: "🐧"; /* Logo Linux implicite */
-            font-size: 4rem;
-            display: block;
-        }
-
-        .stats-box {
-            background: var(--light);
-            padding: 1rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-            border: 1px solid #ddd;
-        }
-
-        /* --- Zone Droite : Le Magasin (Ressources NIRD) --- */
-        .shop-zone {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
         }
 
-        .shop-header {
-            background: var(--dark);
+        h1 { margin-bottom: 10px; }
+
+        /* Conteneur principal pour gérer la superposition du Game Over */
+        #game-wrapper {
+            position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.6);
+            border-radius: 4px;
+            overflow: hidden; /* Pour que le canvas ne dépasse pas si on arrondit les bords */
+        }
+
+        canvas {
+            background-color: #000;
+            display: block;
+        }
+
+        /* Style de l'écran Game Over */
+        #game-over-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85); /* Fond semi-transparent */
+            display: none; /* Caché par défaut */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        #game-over-screen h2 {
+            font-size: 40px;
+            color: #e74c3c;
+            margin: 0 0 20px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        #final-score-text {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+
+        /* Style du bouton */
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #27ae60;
             color: white;
-            padding: 1rem;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .upgrade-item {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
-            border-left: 5px solid var(--secondary);
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
-            user-select: none;
-        }
-
-        .upgrade-item:hover {
-            transform: scale(1.02);
-        }
-
-        .upgrade-item.locked {
-            opacity: 0.6;
-            background-color: #eee;
-            cursor: not-allowed;
-        }
-
-        .upgrade-info h4 { margin: 0 0 0.2rem 0; font-size: 1.2rem; }
-        .upgrade-info p { margin: 0; color: #7f8c8d; font-size: 0.9rem; }
-        .upgrade-cost {
+            transition: transform 0.1s, background-color 0.2s;
             font-weight: bold;
-            color: var(--danger);
-            background: #ffeaa7;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
+        }
+
+        button:hover {
+            background-color: #2ecc71;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        #live-score {
+            font-size: 20px;
+            margin-top: 15px;
+            font-weight: bold;
         }
         
-        .level-badge {
-            background: var(--secondary);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            margin-left: 0.5rem;
-        }
-
-        /* --- Explications / Footer --- */
-        .context-section {
-            max-width: 800px;
-            margin: 4rem auto;
-            text-align: center;
-            padding: 2rem;
-            background: white;
-            border-radius: 15px;
-        }
-
-        @media (max-width: 768px) {
-            .game-container { grid-template-columns: 1fr; }
+        .instructions {
+            margin-top: 10px;
+            color: #95a5a6;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>💻 NIRD Clicker</h1>
-        <p>Le Village Numérique Résistant contre l'Empire Big Tech</p>
-    </header>
+    <h1>Snake Pro 🐍</h1>
 
-    <div class="game-container">
+    <div id="game-wrapper">
+        <canvas id="gc" width="400" height="400"></canvas>
         
-        <div class="click-zone">
-            <div>
-                <span id="score" class="score-display">0</span>
-                <span class="score-label">Ordinateurs sauvés de la déchetterie</span>
-            </div>
-            
-            <br>
-            
-            <button id="main-btn" onclick="clickAction()">LIBÉRER<br>UN PC</button>
-
-            <div class="stats-box">
-                <p><strong>Production automatique :</strong> <span id="per-second">0</span> PC / sec</p>
-                <p><strong>Impact écologique évité :</strong> <span id="co2-saved">0</span> kg de CO2</p>
-            </div>
-            
-            <div style="margin-top: 1rem; font-style: italic; color: var(--primary);">
-                "Ne jetez pas, migrez !"
-            </div>
-        </div>
-
-        <div class="shop-zone">
-            <div class="shop-header">
-                <h3>🛠️ Organiser la Résistance (Améliorations)</h3>
-                <small>Investissez vos PC sauvés pour recruter</small>
-            </div>
-
-            <div id="upgrades-list">
-                </div>
+        <!-- Écran Game Over (superposé) -->
+        <div id="game-over-screen">
+            <h2>Game Over</h2>
+            <div id="final-score-text">Score final : <span id="final-score">0</span></div>
+            <button onclick="resetGame()">Try Again 🔄</button>
         </div>
     </div>
 
-    <div class="context-section">
-        <h3>Pourquoi ce jeu ?</h3>
-        <p>
-            Dans la réalité, la démarche <strong>NIRD</strong> permet aux établissements scolaires de reprendre le contrôle. 
-            Chaque clic représente un ordinateur reconditionné ou passé sous Linux pour éviter l'obsolescence programmée de Windows 10.
-            <br><br>
-            <em>Source : Sujet Nuit de l'Info 2025 - Le Village Numérique Résistant.</em>
-        </p>
-    </div>
+    <div id="live-score">Score : <span id="score">0</span></div>
+    <div class="instructions">Les murs tuent • La vitesse augmente</div>
 
     <script>
-        // --- LOGIQUE DU JEU ---
+        const canvas = document.getElementById('gc');
+        const ctx = canvas.getContext('2d');
+        
+        const scoreSpan = document.getElementById('score');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const finalScoreSpan = document.getElementById('final-score');
 
-        let state = {
-            score: 0,
-            perSecond: 0,
-            totalClicks: 0
+        // Configuration de la grille
+        const tileCount = 20; 
+        const gridSize = canvas.width / tileCount;
+
+        // Variables de jeu
+        let headX, headY;
+        let velocityX, velocityY;
+        let appleX, appleY;
+        let trail = [];
+        let tailLength;
+        let score;
+        let isGameRunning = false;
+        
+        // Gestion de la vitesse
+        let baseSpeed = 200; // Vitesse de départ (ms par image) - Plus c'est haut, plus c'est lent
+        let currentSpeed = baseSpeed;
+        let gameTimeout; // Pour stocker le timer et pouvoir l'annuler
+
+        // Pour empêcher le retournement rapide (bug classique du snake)
+        let lastInputDirection = ""; 
+
+        // Initialisation au chargement
+        window.onload = function() {
+            document.addEventListener("keydown", keyPush);
+            resetGame();
         };
 
-        // Définition des améliorations basées sur le PDF
-        const upgrades = [
-            {
-                id: 'usb',
-                name: "Clé USB Bootable",
-                desc: "Permet d'installer Linux plus vite.",
-                baseCost: 15,
-                production: 0.5, // 1 PC tous les 2 secondes
-                count: 0,
-                icon: "💾"
-            },
-            {
-                id: 'club',
-                name: "Club Informatique",
-                desc: "Des élèves passionnés aident à la maintenance.", // 
-                baseCost: 100,
-                production: 3,
-                count: 0,
-                icon: "students" // ou emoji 🙋
-            },
-            {
-                id: 'teacher',
-                name: "Formation Profs",
-                desc: "Les enseignants adoptent le Libre.", // 
-                baseCost: 500,
-                production: 10,
-                count: 0,
-                icon: "👨‍🏫"
-            },
-            {
-                id: 'tech',
-                name: "Admin Réseau Allié",
-                desc: "L'admin réseau déploie des images NIRD.", // 
-                baseCost: 2000,
-                production: 50,
-                count: 0,
-                icon: "⚙️"
-            },
-            {
-                id: 'forge',
-                name: "Forge des Communs",
-                desc: "Mutualisation nationale des ressources.", // [cite: 46]
-                baseCost: 10000,
-                production: 200,
-                count: 0,
-                icon: "🔥"
+        function resetGame() {
+            // Réinitialiser les variables
+            headX = 10;
+            headY = 10;
+            velocityX = 0;
+            velocityY = 0;
+            trail = [];
+            tailLength = 5;
+            score = 0;
+            currentSpeed = baseSpeed;
+            lastInputDirection = "";
+
+            // Placer la première pomme
+            placeApple();
+
+            // UI
+            scoreSpan.innerText = score;
+            gameOverScreen.style.display = "none";
+            isGameRunning = true;
+
+            // Lancer la boucle de jeu
+            clearTimeout(gameTimeout);
+            gameLoop();
+        }
+
+        function gameLoop() {
+            if (!isGameRunning) return;
+
+            update();
+            draw();
+
+            // Rappeler la fonction avec la vitesse actuelle (vitesse variable)
+            gameTimeout = setTimeout(gameLoop, currentSpeed);
+        }
+
+        function update() {
+            // Déplacement
+            headX += velocityX;
+            headY += velocityY;
+
+            // 1. Vérification Collision MURS (Game Over)
+            if (headX < 0 || headX >= tileCount || headY < 0 || headY >= tileCount) {
+                triggerGameOver();
+                return;
             }
-        ];
 
-        // Éléments du DOM
-        const scoreEl = document.getElementById('score');
-        const perSecEl = document.getElementById('per-second');
-        const co2El = document.getElementById('co2-saved');
-        const upgradesContainer = document.getElementById('upgrades-list');
-        const btn = document.getElementById('main-btn');
-
-        // Fonction du clic principal
-        function clickAction() {
-            addScore(1);
-            // Petit effet visuel
-            btn.style.transform = "scale(0.95)";
-            setTimeout(() => btn.style.transform = "scale(1)", 50);
-        }
-
-        // Ajouter du score
-        function addScore(amount) {
-            state.score += amount;
-            state.totalClicks += amount;
-            updateUI();
-        }
-
-        // Acheter une amélioration
-        function buyUpgrade(index) {
-            const upg = upgrades[index];
-            if (state.score >= upg.cost) {
-                state.score -= upg.cost;
-                upg.count++;
-                // Augmentation du coût (x1.15 à chaque achat)
-                upg.cost = Math.ceil(upg.baseCost * Math.pow(1.15, upg.count));
-                recalcProduction();
-                renderUpgrades(); // Re-render pour mettre à jour les prix/boutons
-                updateUI();
-            }
-        }
-
-        // Recalculer la production par seconde
-        function recalcProduction() {
-            let totalProd = 0;
-            upgrades.forEach(u => {
-                totalProd += (u.production * u.count);
-            });
-            state.perSecond = parseFloat(totalProd.toFixed(1));
-        }
-
-        // Boucle de jeu (1 fois par seconde)
-        setInterval(() => {
-            if (state.perSecond > 0) {
-                addScore(state.perSecond);
-            }
-        }, 1000);
-
-        // Mise à jour de l'affichage simple
-        function updateUI() {
-            scoreEl.innerText = Math.floor(state.score);
-            perSecEl.innerText = state.perSecond;
-            // Estimation fictive : 1 PC = ~200kg CO2 à la fabrication évité
-            co2El.innerText = (state.totalClicks * 200).toLocaleString(); 
-
-            // Vérifier si les boutons d'achat sont dispos
-            upgrades.forEach((u, index) => {
-                const el = document.getElementById(`upg-${index}`);
-                if (el) {
-                    if (state.score >= u.cost) {
-                        el.classList.remove('locked');
-                    } else {
-                        el.classList.add('locked');
+            // 2. Vérification Collision SOI-MÊME (Game Over)
+            // On ne vérifie que si le serpent bouge
+            if (velocityX !== 0 || velocityY !== 0) {
+                for (let t of trail) {
+                    if (t.x === headX && t.y === headY) {
+                        triggerGameOver();
+                        return;
                     }
                 }
-            });
-        }
+            }
 
-        // Génération de la liste des upgrades (HTML)
-        function renderUpgrades() {
-            upgradesContainer.innerHTML = "";
-            upgrades.forEach((u, index) => {
-                // Calcul du coût actuel si pas encore fait (init)
-                if (!u.cost) u.cost = u.baseCost;
+            // Mise à jour du corps du serpent
+            trail.push({ x: headX, y: headY });
+            while (trail.length > tailLength) {
+                trail.shift();
+            }
 
-                const isLocked = state.score < u.cost ? 'locked' : '';
+            // 3. Manger la pomme
+            if (headX === appleX && headY === appleY) {
+                tailLength++;
+                score += 10;
+                scoreSpan.innerText = score;
                 
-                const html = `
-                <div id="upg-${index}" class="upgrade-item ${isLocked}" onclick="buyUpgrade(${index})">
-                    <div style="display:flex; align-items:center;">
-                        <div style="font-size: 2rem; margin-right: 1rem;">${u.icon || '📦'}</div>
-                        <div class="upgrade-info">
-                            <h4>${u.name} <span class="level-badge">Niv. ${u.count}</span></h4>
-                            <p>${u.desc}</p>
-                            <p style="font-size:0.8rem; color:var(--primary);">+${u.production} PC/sec</p>
-                        </div>
-                    </div>
-                    <div class="upgrade-cost">
-                        ${u.cost} PC
-                    </div>
-                </div>
-                `;
-                upgradesContainer.innerHTML += html;
-            });
+                // ACCÉLÉRATION : On réduit le délai de 5ms à chaque pomme, minimum 50ms
+                if (currentSpeed > 50) {
+                    currentSpeed -= 5; 
+                }
+
+                placeApple();
+            }
         }
 
-        // Initialisation
-        renderUpgrades();
-        updateUI();
+        function draw() {
+            // Fond noir
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+            // Pomme (Rouge)
+            ctx.fillStyle = "#e74c3c";
+            // Un petit effet arrondi pour la pomme
+            ctx.fillRect(appleX * gridSize + 1, appleY * gridSize + 1, gridSize - 2, gridSize - 2);
+
+            // Serpent (Vert)
+            ctx.fillStyle = "#2ecc71";
+            for (let i = 0; i < trail.length; i++) {
+                // Tête un peu plus claire ou différente si on veut, ici tout est vert
+                ctx.fillRect(trail[i].x * gridSize, trail[i].y * gridSize, gridSize - 1, gridSize - 1);
+            }
+        }
+
+        function placeApple() {
+            // Position aléatoire, mais on s'assure qu'elle n'est pas SUR le serpent
+            let validPosition = false;
+            while(!validPosition) {
+                appleX = Math.floor(Math.random() * tileCount);
+                appleY = Math.floor(Math.random() * tileCount);
+                
+                validPosition = true;
+                for(let t of trail) {
+                    if(t.x === appleX && t.y === appleY) {
+                        validPosition = false;
+                        break;
+                    }
+                }
+            }
+        }
+
+        function triggerGameOver() {
+            isGameRunning = false;
+            finalScoreSpan.innerText = score;
+            gameOverScreen.style.display = "flex"; // Affiche l'écran de fin
+        }
+
+        function keyPush(evt) {
+            if (!isGameRunning) return;
+
+            // Empêcher de faire demi-tour directement (ex: aller gauche quand on va droite)
+            // Utilisation de lastInputDirection pour éviter les bugs de frappe rapide
+            
+            switch(evt.keyCode) {
+                case 37: // Gauche
+                    if (velocityX !== 1) { 
+                        velocityX = -1; velocityY = 0; 
+                    }
+                    break;
+                case 38: // Haut
+                    if (velocityY !== 1) { 
+                        velocityX = 0; velocityY = -1; 
+                    }
+                    break;
+                case 39: // Droite
+                    if (velocityX !== -1) { 
+                        velocityX = 1; velocityY = 0; 
+                    }
+                    break;
+                case 40: // Bas
+                    if (velocityY !== -1) { 
+                        velocityX = 0; velocityY = 1; 
+                    }
+                    break;
+            }
+        }
     </script>
 </body>
 </html>
