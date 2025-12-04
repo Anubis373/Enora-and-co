@@ -1,0 +1,172 @@
+:root {
+            --primary: #e67e22; /* Orange Artisanat */
+            --secondary: #2c3e50; /* Bleu Nuit */
+            --accent: #27ae60; /* Vert Durable */
+            --light: #f5f6fa;
+            --dark: #1a252f;
+            --danger: #c0392b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--dark);
+            background-color: var(--light);
+        }
+
+        /* --- Header --- */
+        header {
+            background: var(--secondary);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        header h1 { margin: 0; font-size: 2.5rem; }
+        header p { color: var(--primary); font-weight: bold; margin-top: 0.5rem; }
+
+        /* --- Layout Clicker --- */
+        .game-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr; /* Colonne gauche info, droite shop */
+            gap: 2rem;
+            padding: 0 1rem;
+        }
+
+        /* --- Zone Gauche : Le PC à libérer --- */
+        .click-zone {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+        }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--accent);
+            display: block;
+        }
+
+        .score-label {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            margin-bottom: 2rem;
+        }
+
+        #main-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 10px 0 #d35400;
+            transition: all 0.1s;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #main-btn:active {
+            transform: translateY(10px);
+            box-shadow: 0 0 0 #d35400;
+        }
+
+        #main-btn::after {
+            content: "🐧"; /* Logo Linux implicite */
+            font-size: 4rem;
+            display: block;
+        }
+
+        .stats-box {
+            background: var(--light);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            border: 1px solid #ddd;
+        }
+
+        /* --- Zone Droite : Le Magasin (Ressources NIRD) --- */
+        .shop-zone {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .shop-header {
+            background: var(--dark);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .upgrade-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+            border-left: 5px solid var(--secondary);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .upgrade-item:hover {
+            transform: scale(1.02);
+        }
+
+        .upgrade-item.locked {
+            opacity: 0.6;
+            background-color: #eee;
+            cursor: not-allowed;
+        }
+
+        .upgrade-info h4 { margin: 0 0 0.2rem 0; font-size: 1.2rem; }
+        .upgrade-info p { margin: 0; color: #7f8c8d; font-size: 0.9rem; }
+        .upgrade-cost {
+            font-weight: bold;
+            color: var(--danger);
+            background: #ffeaa7;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+        }
+        
+        .level-badge {
+            background: var(--secondary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+
+        /* --- Explications / Footer --- */
+        .context-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .game-container { grid-template-columns: 1fr; }
+        }
