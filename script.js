@@ -18,6 +18,16 @@ const upgrades = [
         count: 0,
         icon: "💾"
     },
+    // NOUVELLE AMÉLIORATION POUR DÉBLOQUER LE SNAKE
+    {
+        id: 'matrix_access',
+        name: "Accès au Noyau Système",
+        desc: "Déverrouille le jeu d'entraînement 'The Snake Matrix'.",
+        baseCost: 50,
+        production: 0, 
+        count: 0,
+        icon: "🗝️"
+    },
     {
         id: 'club',
         name: "Club Informatique",
@@ -35,16 +45,6 @@ const upgrades = [
         production: 10,
         count: 0,
         icon: "👨‍🏫"
-    },
-    // NOUVELLE AMÉLIORATION POUR DÉBLOQUER LE SNAKE
-    {
-        id: 'matrix_access',
-        name: "Accès au Noyau Système",
-        desc: "Déverrouille le jeu d'entraînement 'The Snake Matrix'.",
-        baseCost: 20,
-        production: 0, 
-        count: 0,
-        icon: "🗝️"
     },
     // FIN NOUVELLE AMÉLIORATION
     {
