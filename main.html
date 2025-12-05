@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIRD - Le Village Numérique Résistant</title>
+    <link rel="stylesheet" href="mystyle.css">
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <h1>Le Village Numérique Résistant</h1>
+            <div class="subtitle">Démarche NIRD : Numérique Inclusif, Responsable et Durable</div>
+            <p>Face à l'Empire numérique et l'obsolescence programmée, rejoignez la résistance ! Aidez votre établissement à reprendre le pouvoir.</p>
+            <a href="#game-section" class="cta-button">Rejoindre la Résistance</a>
+        </div>
+    </header>
+
+    <section class="container">
+        <div class="section-title">
+            <h2>David contre Goliath</h2>
+            <p>Pourquoi devons-nous agir maintenant ?</p>
+        </div>
+        <div class="grid-2">
+            <div class="card">
+                <h3>🚨 L'Urgence</h3>
+                <p>La fin du support de <strong>Windows 10</strong> met en évidence la dépendance structurelle aux Big Tech. Cela risque de rendre obsolètes des milliers d'ordinateurs parfaitement fonctionnels dans nos écoles.</p>
+                <div class="alert-box">
+                    <strong>Le problème :</strong> Matériel rendu obsolète, coûts de licences, dépendance aux GAFAM, données hors UE.
+                </div>
+            </div>
+            <div class="card">
+                <h3>🛡️ La Solution : NIRD</h3>
+                <p>Face à ce Goliath numérique, la démarche NIRD permet aux établissements d'adopter progressivement un Numérique Inclusif, Responsable et Durable.</p>
+                <ul>
+                    <li>Promouvoir l'usage de Linux afin de lutter contre l'obsolescence programmée</li>
+                    <li>Encourager le réemploi et le reconditionnement du matériel</li>
+                    <li>Sensibiliser à la sobriété numérique</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="container">
+        <div class="section-title">
+            <h2>Les 3 Piliers NIRD</h2>
+            <p>Ces trois principes guident l'ensemble des actions menées par la démarche NIRD.</p>
+        </div>
+        <div class="pillars">
+            <div class="pillar-card">
+                <div class="pillar-icon">🤝</div>
+                <h3>Inclusif</h3>
+                <p>Assurer un numérique accessible à toutes et tous, sans laisser personne de côté. (Pilier Inclusion)</p>
+            </div>
+            <div class="pillar-card">
+                <div class="pillar-icon">⚖️</div>
+                <h3>Responsable</h3>
+                <p>Maîtrise des données, éthique, et citoyenneté numérique. (Pilier Responsabilité)</p>
+            </div>
+            <div class="pillar-card">
+                <div class="pillar-icon">🌱</div>
+                <h3>Durable</h3>
+                <p>Réemploi, réparation, sobriété énergétique et lutte contre le gaspillage. (Pilier Durabilité)</p>
+            </div>
+        </div>
+    </section>
+    <div class="divider" id="game-section"></div>
+    <div class="game-container">
+        
+        <div class="click-zone">
+            <div>
+                <span id="score" class="score-display">0</span>
+                <span class="score-label">Ordinateurs sauvés de la déchetterie</span>
+            </div>
+            
+            <br>
+            
+            <button id="main-btn" onclick="clickAction()">LIBÉRER<br>UN PC</button>
+
+            <div class="stats-box">
+                <p><strong>Production automatique :</strong> <span id="per-second">0</span> PC / sec</p>
+                <p><strong>Impact écologique évité :</strong> <span id="co2-saved">0</span> kg de CO2</p>
+            </div>
+            
+            <div style="margin-top: 1rem; font-style: italic; color: var(--primary);">
+                "Ne jetez pas, migrez !"
+            </div>
+        </div>
+
+        <div class="shop-zone">
+            <div class="shop-header">
+                <h3>🛠️ Organiser la Résistance (Améliorations)</h3>
+                <small>Investissez vos PC sauvés pour recruter les acteurs NIRD</small>
+            </div>
+
+            <div id="upgrades-list">
+                </div>
+        </div>
+    </div>
+
+    <footer class="container" style="max-width: 100%;">
+        <p>Vous pouvez remplir ce <a href="form/Main.html" target="_blank">Formulaire A38</a>.</p>
+        <h3>Ressources & Crédits</h3>
+        <p>Projet réalisé pour <strong>La Nuit de l'Info 2025</strong>.</p>
+        <p>Basé sur la démarche du <a href="https://nird.forge.apps.education.fr/" target="_blank">Collectif NIRD</a> et de la Forge des communs numériques éducatifs.</p>
+        <p><small>Licence Libre - 2025</small></p>
+        <div style="margin-top: 1rem;">
+            <a href="https://nird.forge.apps.education.fr/" class="cta-button" style="font-size: 0.8rem; padding: 0.5rem 1rem;">Visiter le site officiel NIRD</a>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

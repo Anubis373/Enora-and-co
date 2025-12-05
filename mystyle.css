@@ -1,0 +1,413 @@
+:root {
+    --primary: #e67e22; /* Orange "Astérix/Artisanat" */
+    --secondary: #2c3e50; /* Bleu Nuit "Tech/Sérieux" */
+    --accent: #27ae60; /* Vert "Durable" */
+    --light: #ecf0f1;
+    --dark: #1a252f;
+    --text: #333;
+    --danger: #c0392b; /* Ajout pour le coût du clicker */
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    color: var(--text);
+    background-color: var(--light);
+}
+
+/* --- Header / Hero --- */
+header {
+    background: linear-gradient(135deg, var(--secondary) 0%, var(--dark) 100%);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+header h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+header .subtitle {
+    font-size: 1.5rem;
+    color: var(--primary);
+    font-weight: bold;
+    margin-bottom: 2rem;
+}
+
+header p {
+    max-width: 600px;
+    margin: 0 auto 2rem auto;
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.cta-button {
+    background-color: var(--primary);
+    color: white;
+    padding: 1rem 2rem;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: bold;
+    transition: transform 0.2s, background 0.2s;
+    display: inline-block;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.cta-button:hover {
+    transform: scale(1.05);
+    background-color: #d35400;
+}
+
+/* --- Section Container --- */
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+}
+
+/* --- Section: Le Constat (Goliath) --- */
+.section-title {
+    text-align: center;
+    margin-bottom: 3rem;
+    color: var(--secondary);
+}
+
+.section-title h2 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: center;
+}
+
+.card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.alert-box {
+    background-color: #ffeaa7;
+    border-left: 5px solid #fdcb6e;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+/* --- Section: La Solution (NIRD) / Piliers --- */
+.pillars {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.pillar-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    border-top: 5px solid var(--accent);
+    transition: transform 0.3s;
+}
+
+.pillar-card:hover {
+    transform: translateY(-5px);
+}
+
+.pillar-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--secondary);
+}
+
+/* --- Styles Spécifiques Clicker --- */
+.game-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    display: grid;
+    /* 1/3 pour le clic, 2/3 pour le magasin */
+    grid-template-columns: 1fr 2fr; 
+    gap: 2rem;
+    padding: 0 1rem;
+    background: #e0e0e0; /* Légère différence de fond pour le jeu */
+    border-radius: 20px;
+}
+
+.click-zone {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    height: fit-content; 
+    margin: 2rem ; /* Correction de marge pour éviter un décalage vertical étrange */
+    padding-bottom: 2rem; /* Ajout d'un padding en bas pour séparer du shop en mobile */
+}
+
+.score-display {
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--accent);
+    display: block;
+}
+
+.score-label {
+    font-size: 1.2rem;
+    color: #7f8c8d;
+    margin-bottom: 2rem;
+}
+
+#main-btn {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    width: 150px; 
+    height: 150px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 8px 0 #d35400;
+    transition: all 0.1s;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+#main-btn:active {
+    transform: translateY(8px);
+    box-shadow: 0 0 0 #d35400;
+}
+
+#main-btn::after {
+    content: "🐧"; /* Logo Linux implicite */
+    font-size: 3rem;
+    display: block;
+}
+
+.stats-box {
+    background: var(--light);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    border: 1px solid #ddd;
+}
+
+/* --- Zone Droite : Le Magasin (Ressources NIRD) --- */
+.shop-zone {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 2rem 0;
+}
+
+.shop-header {
+    background: var(--secondary);
+    color: white;
+    padding: 1rem;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#upgrades-list {
+    max-height: 500px; 
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.upgrade-item {
+    background: white;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+    border-left: 5px solid var(--secondary);
+    cursor: pointer;
+    user-select: none;
+    margin-bottom: 1rem; /* Ajout d'une petite marge */
+}
+
+.upgrade-item:hover {
+    transform: scale(1.01);
+}
+
+.upgrade-item.locked {
+    opacity: 0.6;
+    background-color: #eee;
+    cursor: not-allowed;
+    border-left: 5px solid var(--danger);
+}
+
+.upgrade-info h4 { margin: 0 0 0.2rem 0; font-size: 1.1rem; }
+.upgrade-info p { margin: 0; color: #7f8c8d; font-size: 0.8rem; }
+.upgrade-cost {
+    font-weight: bold;
+    color: var(--danger);
+    background: #ffeaa7;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.level-badge {
+    background: var(--secondary);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    margin-left: 0.5rem;
+}
+
+/* --- Footer --- */
+footer {
+    background-color: var(--dark);
+    color: #bdc3c7;
+    text-align: center;
+    padding: 2rem;
+    margin-top: 4rem;
+}
+
+footer a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+
+/* --- Styles NOUVEAUX pour l'intégration du jeu Snake (La Bulle Matrice) --- */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+.game-bubble-wrapper {
+    background-color: var(--dark); /* Couleur sombre pour l'effet "bulle" */
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    padding: 2rem;
+    margin: 4rem auto;
+    max-width: 800px; 
+    color: #0F0;
+    text-align: center;
+}
+
+.snake-matrix-game-area {
+    background-color: #000;
+    color: #0F0;
+    font-family: 'Share Tech Mono', monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+.snake-matrix-game-area h1, .snake-matrix-game-area .subtitle { text-shadow: 0 0 8px #0F0; }
+.snake-matrix-game-area h1 { font-size: 50px; margin: 0; letter-spacing: 2px; }
+.snake-matrix-game-area .subtitle { color: #88ff88; margin-bottom: 10px; font-size: 18px; opacity: 0.8; }
+
+#game-wrapper {
+    position: relative;
+    border: 2px solid #005500;
+    border-radius: 4px;
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
+    background-color: #000;
+}
+
+canvas { display: block; }
+
+.scanlines {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.2) 50%);
+    background-size: 100% 4px; pointer-events: none; z-index: 5;
+}
+
+/* HUD */
+#matrix-hud { position: absolute; top: 15px; right: 20px; text-align: right; z-index: 6; pointer-events: none; }
+.hud-label { font-size: 14px; color: #00AA00; display: block; }
+#matrix-score-val { font-size: 40px; color: #0F0; text-shadow: 0 0 10px #0F0; font-weight: bold; }
+
+/* Status Effects HUD */
+#status-effects {
+    position: absolute; top: 15px; left: 20px; z-index: 6; pointer-events: none;
+    display: flex; flex-direction: column; gap: 5px;
+}
+.status-msg { font-size: 16px; font-weight: bold; text-shadow: 0 0 5px currentColor; }
+
+/* Game Over */
+#game-over-screen {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: #0078d7; color: white; display: none;
+    flex-direction: column; justify-content: center; padding: 40px;
+    box-sizing: border-box; font-family: 'Segoe UI', sans-serif; z-index: 10;
+}
+.sad-face { font-size: 80px; margin-bottom: 10px; }
+#game-over-screen h2 { font-size: 24px; font-weight: normal; margin: 0 0 20px 0; text-shadow: none; }
+
+.snake-matrix-game-area button { /* Le sélecteur est spécifique pour ne pas impacter le clicker */
+    margin-top: 30px; padding: 10px 25px; font-family: 'Share Tech Mono', monospace;
+    font-size: 24px; background-color: #000; color: #0F0;
+    border: 2px solid #0F0; cursor: pointer; box-shadow: 0 0 10px rgba(0, 255, 0, 0.3); transition: all 0.2s;
+}
+.snake-matrix-game-area button:hover { background-color: #0F0; color: black; box-shadow: 0 0 20px rgba(0, 255, 0, 0.8); }
+
+#legend {
+    margin-top: 10px; display: flex; gap: 15px; font-size: 14px;
+    color: #0F0;
+}
+.legend-item span { font-weight: bold; margin-right: 5px; }
+
+
+/* --- Media Queries (Adaptation mobile) --- */
+@media (max-width: 768px) {
+    .grid-2, .game-container {
+        grid-template-columns: 1fr;
+    }
+    .game-container {
+        padding: 1rem;
+        border-radius: 0;
+    }
+    header h1 {
+        font-size: 2rem;
+    }
+    .game-bubble-wrapper {
+        padding: 1rem;
+        margin: 2rem auto;
+        border-radius: 0;
+    }
+    /* Rendre le Snake Game un peu plus petit sur mobile pour s'assurer qu'il rentre */
+    #game-wrapper {
+        transform: scale(0.8); 
+        margin: 0 auto;
+    }
+}
+
+.upgrade-item.play-button {
+    background-color: var(--accent); /* Vert pour indiquer le jeu */
+    color: white;
+    font-weight: bold;
+    border-left: 5px solid #2ecc71;
+    box-shadow: 0 5px 10px rgba(46, 204, 113, 0.3);
+}
+
+.upgrade-item.play-button .upgrade-cost {
+    background-color: white;
+    color: var(--accent);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+}
