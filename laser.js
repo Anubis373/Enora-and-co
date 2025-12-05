@@ -13,6 +13,12 @@ let BASE_POS = { x: 0, y: 0 };
 let PLAYER_POS = { x: 0, y: 0 };
 
 function resize() {
+  
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.overflow = 'hidden';
+  document.body.style.margin = '0';
+  document.body.style.padding = '0';
+
   const cssWidth = window.innerWidth;
   const cssHeight = window.innerHeight;
   DPR = window.devicePixelRatio || 1;
@@ -42,7 +48,7 @@ const RECOIL = 0.015;          // effet visuel
 const LASER_PIERCING = false;
 
 // ====== Ennemis / vagues (stats FIXES) ======
-const BASE_MAX_HP = 100;
+const BASE_MAX_HP = 1;
 const WAVE_INTERVAL = 2200; // ms
 let paused = false;
 const rng = (min, max) => min + Math.random() * (max - min);
@@ -425,16 +431,16 @@ function update(t, dt) {
   }
 
   // UI
-  document.getElementById('wave').textContent = `Vague: ${state.wave}`;
-  document.getElementById('score').textContent = `Score: ${state.score}`;
-  document.getElementById('basehp').textContent = `Base: ${Math.max(0, Math.round(state.baseHP))}%`;
+//   document.getElementById('wave').textContent = `Vague: ${state.wave}`;
+//   document.getElementById('score').textContent = `Score: ${state.score}`;
+//   document.getElementById('basehp').textContent = `Base: ${Math.max(0, Math.round(state.baseHP))}%`;
   
-document.getElementById('status').textContent =
-  paused
-    ? '⏸ Pause'
-    : (state.gameOver
-        ? `${state.deathMessage}  –  Appuie sur R pour rejouer`
-        : '');
+// document.getElementById('status').textContent =
+//   paused
+//     ? '⏸ Pause'
+//     : (state.gameOver
+//         ? `${state.deathMessage}  –  Appuie sur R pour rejouer`
+//         : '');
 
 }
 
@@ -620,8 +626,94 @@ function draw(t) {
   drawPlayerAim(t);
   drawParticles();
   drawGameOverPanel(t);
+  drawHUD(t);
+  drawTopStatus(t);
 
 }
+
+
+function drawHUD(t) {
+  // Boîte en haut gauche
+  const pad = 12;            // marge intérieure
+  const gap = 6;             // espacement vertical
+  const lineH = 18;          // hauteur de ligne
+  const boxX = 16, boxY = 16;
+  const boxW = 210, boxH = pad*2 + lineH*3 + gap*2; // 3 lignes
+
+  // Fond semi-transparent + bord
+  ctx.save();
+  ctx.beginPath();
+  const r = 10;
+  const x = boxX, y = boxY, w = boxW, h = boxH;
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y,     x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x,     y + h, r);
+  ctx.arcTo(x,     y + h, x,     y,     r);
+  ctx.arcTo(x,     y,     x + w, y,     r);
+  ctx.closePath();
+
+  // Dégradé léger
+  const grad = ctx.createLinearGradient(x, y, x, y + h);
+  grad.addColorStop(0, 'rgba(10, 12, 18, 0.85)');
+  grad.addColorStop(1, 'rgba(8, 10, 16, 0.85)');
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  ctx.strokeStyle = '#2b3a55';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Texte
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.font = 'bold 15px Consolas, Menlo, monospace';
+  ctx.fillStyle = '#c9d1d9';
+
+  let ty = y + pad + lineH/2;
+  ctx.fillText(`Vague : ${state.wave}`, x + pad, ty);
+  ty += lineH + gap;
+  ctx.fillText(`Score : ${state.score}`, x + pad, ty);
+  ty += lineH + gap;
+
+  // Base HP + petite barre
+  const hpPct = Math.max(0, Math.round(state.baseHP));
+  ctx.fillText(`Base : ${hpPct}%`, x + pad, ty);
+
+  // Mini barre HP à droite
+  const barW = 90, barH = 8;
+  const barX = x + w - pad - barW;
+  const barY = ty - barH/2;
+  ctx.fillStyle = '#111722';
+  ctx.fillRect(barX, barY, barW, barH);
+
+  const hpRatio = Math.max(0, Math.min(1, state.baseHP / 100));
+  ctx.fillStyle = hpRatio > 0.5 ? '#7ee787' : (hpRatio > 0.25 ? '#ffd166' : '#ff6b6b');
+  ctx.fillRect(barX, barY, Math.floor(barW * hpRatio), barH);
+
+  ctx.restore();
+}
+
+function drawTopStatus(t) {
+  // Affiche l’état (Pause / Game Over) sous forme de bandeau centré haut
+  let text = '';
+  if (paused && !state.gameOver) text = '⏸ Pause — P pour reprendre';
+  else if (state.gameOver) text = '💥 Game Over — R pour rejouer';
+
+  if (!text) return;
+
+  const bandH = 36;
+  ctx.save();
+  ctx.fillStyle = 'rgba(0,0,0,0.45)';
+  ctx.fillRect(0, 0, W, bandH);
+
+  ctx.font = 'bold 16px Consolas, Menlo, monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = state.gameOver ? '#ff6b6b' : '#ffd166';
+  ctx.fillText(text, W / 2, Math.floor(bandH / 2));
+  ctx.restore();
+}
+
 
 function drawArenaGrid() {
   ctx.save();
