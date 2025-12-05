@@ -42,8 +42,9 @@ html, body {
   display: block;
   width: 100vw;
   height: 100vh;
-  background: #0a0b0f;
-  outline: 1px solid #1d2230;
-  cursor: crosshair;
-  image-rendering: pixelated;
+}
+
+.canva{
+  padding: 0;
+  margin: 0rem;
 }
