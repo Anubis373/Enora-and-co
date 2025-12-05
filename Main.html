@@ -102,7 +102,7 @@
     
     <div id="legend">
         <div class="legend-item"><span style="color:#00ffff">C:</span>Slow</div>
-        <div class="legend-item"><span style="color:#ffff00">P:</span>Cut Tail</div>
+        <div class="legend-item"><span style="color:#ffff00">P:</span>Cut Tail (-Score)</div>
         <div class="legend-item"><span style="color:#ff0000">B:</span>Fast</div>
         <div class="legend-item"><span style="color:#ff00ff">V:</span>Virus (Reverse)</div>
     </div>
@@ -215,7 +215,6 @@
         function manageItems(dt) {
             itemsTimer += dt;
             
-            // Apparition item
             if (itemsTimer > 4000 && activeItems.length < 2) {
                 itemsTimer = 0;
                 if(Math.random() > 0.3) { 
@@ -223,14 +222,11 @@
                 }
             }
 
-            // Gestion de la disparition (Durée de vie)
             for (let i = 0; i < activeItems.length; i++) {
                 activeItems[i].timeLeft -= dt;
-                
-                // Si le temps est écoulé, on supprime l'item
                 if (activeItems[i].timeLeft <= 0) {
                     activeItems.splice(i, 1);
-                    i--; // Ajuster l'index car le tableau a rétréci
+                    i--; 
                 }
             }
         }
@@ -256,7 +252,7 @@
                 y: iy, 
                 type: type, 
                 typeKey: randomKey,
-                timeLeft: 8000 // 8 secondes de vie
+                timeLeft: 8000
             });
         }
 
@@ -317,6 +313,8 @@
 
         function applyItemEffect(item) {
             const type = item.type;
+            
+            // On affiche le texte flottant "PURGE"
             createFloatingText(headX, headY, type.name, type.color);
             createExplosion(headX, headY, type.color);
 
@@ -331,6 +329,16 @@
                     if (cutAmount > 0) {
                         tailLength -= cutAmount;
                         trail.splice(0, cutAmount); 
+                        
+                        // --- MISE A JOUR DU SCORE ---
+                        let pointsLost = cutAmount * 10;
+                        score -= pointsLost;
+                        if(score < 0) score = 0;
+                        
+                        matrixScoreEl.innerText = score; // Mise à jour immédiate
+                        
+                        // Texte flottant pour indiquer la perte
+                        createFloatingText(headX, headY - 1, "-" + pointsLost, "#ffff00");
                     }
                     break;
                 case 'FAST': 
@@ -378,7 +386,6 @@
         }
 
         function draw() {
-            // Fond
             ctx.fillStyle = "rgba(0, 0, 0, 0.1)"; 
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "#003300"; ctx.font = fontSize + "px monospace";
@@ -392,32 +399,22 @@
                 drops[i]++;
             }
 
-            // Grille
             ctx.strokeStyle = "rgba(0, 255, 0, 0.1)"; ctx.lineWidth = 1;
             for(let i=0; i<tileCount; i++) {
                 ctx.beginPath(); ctx.moveTo(i*gridSize, 0); ctx.lineTo(i*gridSize, canvas.height); ctx.stroke();
                 ctx.beginPath(); ctx.moveTo(0, i*gridSize); ctx.lineTo(canvas.width, i*gridSize); ctx.stroke();
             }
 
-            // Prompt
             ctx.font = "16px 'Share Tech Mono', monospace"; ctx.fillStyle = "#00FF00"; ctx.textAlign = "left";
             ctx.fillText("root@matrix:~/sys$ ./snake_v2.0", 10, 25);
 
-            // Dessins Objets
             for(let item of activeItems) {
-                // Gestion du clignotement
                 ctx.globalAlpha = 1.0;
-                
-                // Si il reste moins de 3 secondes (3000ms), on fait clignoter
                 if (item.timeLeft < 3000) {
-                    // Clignote toutes les 200ms
-                    if (Math.floor(item.timeLeft / 200) % 2 === 0) {
-                        ctx.globalAlpha = 0.3; // Presque invisible
-                    }
+                    if (Math.floor(item.timeLeft / 200) % 2 === 0) ctx.globalAlpha = 0.3;
                 }
-                
                 drawItem(item.x * gridSize, item.y * gridSize, gridSize, item.type);
-                ctx.globalAlpha = 1.0; // Reset opacité
+                ctx.globalAlpha = 1.0; 
             }
 
             drawWindowsLogo(appleX * gridSize, appleY * gridSize, gridSize);
