@@ -1,0 +1,49 @@
+
+:root {
+  color-scheme: dark;
+  --bg: #0c0f14;
+  --fg: #e6e6e6;
+  --accent: #51d0ff;
+  --enemy: #ff5a6a;
+  --wall: #1b2130;
+  --base: #7ee787;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  width: 100%; height: 100%;
+  background: radial-gradient(circle at 20% 10%, #141722, var(--bg) 60%);
+  color: var(--fg);
+  font-family: system-ui, Segoe UI, Roboto, sans-serif;
+  overflow: hidden; /* évite les scrollbars sur petits décalages */
+}
+
+#ui { position: fixed; inset: 0; pointer-events: none; }
+
+#hud {
+  position: absolute; top: 12px; left: 12px;
+  display: flex; gap: 16px; align-items: center;
+  background: rgba(0,0,0,0.35);
+  padding: 8px 12px; border-radius: 8px;
+  backdrop-filter: blur(4px);
+  font-weight: 600;
+}
+
+#help {
+  position: absolute; bottom: 12px; left: 12px;
+  background: rgba(0,0,0,0.25);
+  padding: 8px 12px; border-radius: 8px;
+  font-size: 14px; opacity: 0.9;
+}
+
+/* Plein écran responsive */
+#game {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  background: #0a0b0f;
+  outline: 1px solid #1d2230;
+  cursor: crosshair;
+  image-rendering: pixelated;
+}
