@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Questionnaire avancé</title>
+  <link rel="stylesheet" href="mystyle.css">
+</head>
+<body>
+  <main class="container">
+    <form id="questionnaireForm" class="card" novalidate>
+      <h1>Questionnaire avancé</h1>
+
+      <div class="field">
+        <label for="qi">Quel est votre QI ?</label>
+        <input type="number" id="qi" name="qi" required />
+      </div>
+
+      <div class="field">
+        <label for="blood">Groupe sanguin</label>
+        <input type="text" id="blood" name="blood" placeholder="A+, O-, etc." required />
+      </div>
+
+      <div class="field">
+        <label for="pet">Nom de votre premier animal de compagnie</label>
+        <input type="text" id="pet" name="pet" required />
+      </div>
+
+      <div class="field">
+        <label for="dream">Votre rêve le plus étrange</label>
+        <input type="text" id="dream" name="dream" required />
+      </div>
+
+      <div class="field">
+        <label for="favoriteFood">Plat préféré le plus bizarre</label>
+        <input type="text" id="favoriteFood" name="favoriteFood" required />
+      </div>
+
+      <div class="field">
+        <label for="nickname">Surnom étrange que vous aviez enfant</label>
+        <input type="text" id="nickname" name="nickname" required />
+      </div>
+
+      <div class="field">
+        <label for="superpower">Super pouvoir rêvé</label>
+        <input type="text" id="superpower" name="superpower" required />
+      </div>
+
+      <div class="field">
+        <label for="fear">Peur la plus ridicule</label>
+        <input type="text" id="fear" name="fear" required />
+      </div>
+
+      <div class="field">
+        <label for="secret">Un secret que personne ne connaît</label>
+        <input type="text" id="secret" name="secret" required />
+      </div>
+
+      <div class="field">
+        <label for="wish">Souhait le plus improbable</label>
+        <input type="text" id="wish" name="wish" required />
+      </div>
+
+      <button type="submit" class="btn-primary">Finir le questionnaire</button>
+      <p id="formStatus" class="status" aria-live="polite"></p>
+    </form>
+
+    <div id="successAnimation" style="display:none; text-align:center; margin-top:20px;">
+      <h2>🎉 Questionnaire terminé ! 🎉</h2>
+    </div>
+  </main>
+
+  <script src="script2.js"></script>
+</body>
+</html>
