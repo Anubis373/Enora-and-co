@@ -6,4 +6,4 @@ Pour accéder au jeu du snake, il faut dévérouiller l'amélioration qui coute 
 Pour accéder au laser game, il faut aller tout en bas de la page, puis de cliquer sur le bouton "Aller au combat"
 
 ## Comment accéder au formulaire
-Cliquer sur le bouton "Remplire le formulaire
+Cliquer sur le bouton "Remplire le formulaire"
